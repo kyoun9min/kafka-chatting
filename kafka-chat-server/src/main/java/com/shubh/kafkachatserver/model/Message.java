@@ -11,6 +11,12 @@ import lombok.ToString;
 @ToString
 public class Message {
 
+    public enum MessageType {
+        ENTER, TALK, EXIT
+    }
+
+    private MessageType type;
+    private Long roomId;
     private String sender;
     private String content;
     private String timestamp;
