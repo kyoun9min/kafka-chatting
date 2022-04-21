@@ -1,7 +1,8 @@
 package com.shubh.kafkachatserver.config;
 
 import com.shubh.kafkachatserver.constants.KafkaConstants;
-import com.shubh.kafkachatserver.model.Message;
+import com.shubh.kafkachatserver.model.dto.response.MessageResponse;
+import com.shubh.kafkachatserver.model.entity.Message;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -18,15 +19,15 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 @Configuration
 public class ListenerConfig {
     @Bean
-    ConcurrentKafkaListenerContainerFactory<String, Message> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, Message> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    ConcurrentKafkaListenerContainerFactory<String, MessageResponse> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, MessageResponse> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
     }
 
     @Bean
-    public ConsumerFactory<String, Message> consumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(consumerConfigurations(), new StringDeserializer(), new JsonDeserializer<>(Message.class));
+    public ConsumerFactory<String, MessageResponse> consumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(consumerConfigurations(), new StringDeserializer(), new JsonDeserializer<>(MessageResponse.class));
     }
 
     @Bean

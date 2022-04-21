@@ -18,6 +18,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/app"); // 메시지 발행 요청 prefix
-        registry.enableSimpleBroker("/topic/"); // 메시지 구독 요청 prefix
+        registry.enableSimpleBroker("/topic"); // 메시지 구독 요청 prefix
     }
 }

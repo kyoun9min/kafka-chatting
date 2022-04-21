@@ -1,7 +1,8 @@
 package com.shubh.kafkachatserver.consumer;
 
 import com.shubh.kafkachatserver.constants.KafkaConstants;
-import com.shubh.kafkachatserver.model.Message;
+import com.shubh.kafkachatserver.model.dto.response.MessageResponse;
+import com.shubh.kafkachatserver.model.entity.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -20,8 +21,8 @@ public class MessageListener {
         topics = KafkaConstants.KAFKA_TOPIC,
         groupId = KafkaConstants.GROUP_ID
     )
-    public void listen(Message message) {
+    public void listen(MessageResponse messageResponse) {
         log.info("sending via kafka listener..");
-        template.convertAndSend("/topic/" + message.getRoomId(), message);
+        template.convertAndSend("/topic/room/" + messageResponse.getRoomId(), messageResponse);
     }
 }

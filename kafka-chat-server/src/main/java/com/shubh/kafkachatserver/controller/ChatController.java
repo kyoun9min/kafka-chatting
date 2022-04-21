@@ -1,42 +1,39 @@
 package com.shubh.kafkachatserver.controller;
 
-import com.shubh.kafkachatserver.constants.KafkaConstants;
-import com.shubh.kafkachatserver.model.Message;
+import com.shubh.kafkachatserver.model.dto.request.MessageRequest;
+import com.shubh.kafkachatserver.model.dto.response.MessagePage;
+import com.shubh.kafkachatserver.model.dto.response.MessageResponse;
+import com.shubh.kafkachatserver.service.ChatService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.concurrent.ExecutionException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 public class ChatController {
 
-    private final KafkaTemplate<String, Message> kafkaTemplate;
+    private final ChatService chatService;
 
-    @PostMapping(value = "/api/send/{roomId}", consumes = "application/json", produces = "application/json")
-    public void sendMessage(@PathVariable Long roomId, @RequestBody Message message) {
-
-        message.setTimestamp(LocalDateTime.now().toString());
-        message.setRoomId(roomId);
-        if(message.getType() == Message.MessageType.ENTER){
-            message.setContent(message.getSender() + "님이 입장하셨습니다.");
-        }
-        else if(message.getType() == Message.MessageType.EXIT) {
-            message.setContent(message.getSender() + "님이 퇴장하셨습니다.");
-        }
-        try {
-            // post 요청으로 전달받은 메시지를 해당 카프카 토픽에 생산
-            kafkaTemplate.send(KafkaConstants.KAFKA_TOPIC, message).get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+    @PostMapping(value = "/api/send", consumes = "application/json", produces = "application/json")
+    public void sendMessage(@RequestBody MessageRequest messageRequest) {
+        chatService.sendMessage(messageRequest);
     }
+
+    @GetMapping("/data")
+    public ResponseEntity<List<MessageResponse>> getMessages(@RequestParam Long lastMessageId,
+                                             @RequestParam int size,
+                                             @RequestParam Long roomId) {
+
+//        MessagePage<MessageResponse> messagePage = chatService.fetchMessagePagesBy(lastMessageId, size, roomId);
+//        return messagePage;
+        List<MessageResponse> messageResponses = chatService.fetchMessagePagesBy(lastMessageId, size, roomId);
+        return new ResponseEntity<>(messageResponses, HttpStatus.OK);
+    }
+
+
 
     //    -------------- WebSocket API ----------------
     /*
@@ -47,15 +44,15 @@ public class ChatController {
     * @SendTo는 1:n 으로 메세지를 뿌릴 때 사용하는 구조이며 보통 경로가 /topic 으로 시작한다.
     * @SendToUser는 1:1 로 메세지를 보낼 때 사용하는 구조이며 보통 경로가 /queue 로 시작한다.
     */
-//    @MessageMapping("/sendMessage/{roomId}")
-//    @SendTo("/topic/group/{roomId}")
+//    @MessageMapping("/sendMessage")
+//    @SendTo("/topic/group")
 //    public Message broadcastGroupMessage(@Payload Message message) {
 //        //Sending this message to all the subscribers
 //        return message;
 //    }
 //
-//    @MessageMapping("/newUser/{roomId}")
-//    @SendTo("/topic/group/{roomId}")
+//    @MessageMapping("/newUser")
+//    @SendTo("/topic/group")
 //    public Message addUser(@Payload Message message, SimpMessageHeaderAccessor headerAccessor) {
 //        // Add user in web socket session
 //        headerAccessor.getSessionAttributes().put("username", message.getSender());

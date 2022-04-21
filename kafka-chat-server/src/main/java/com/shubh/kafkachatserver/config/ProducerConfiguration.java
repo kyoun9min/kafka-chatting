@@ -1,6 +1,7 @@
 package com.shubh.kafkachatserver.config;
 
-import com.shubh.kafkachatserver.model.Message;
+import com.shubh.kafkachatserver.model.dto.response.MessageResponse;
+import com.shubh.kafkachatserver.model.entity.Message;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -18,7 +19,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 public class ProducerConfiguration {
 
     @Bean
-    public ProducerFactory<String, Message> producerFactory() {
+    public ProducerFactory<String, MessageResponse> producerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigurations());
     }
 
@@ -32,7 +33,7 @@ public class ProducerConfiguration {
     }
 
     @Bean
-    public KafkaTemplate<String, Message> kafkaTemplate() {
+    public KafkaTemplate<String, MessageResponse> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 }
