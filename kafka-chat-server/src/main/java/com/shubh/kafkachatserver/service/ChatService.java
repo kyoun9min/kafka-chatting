@@ -2,10 +2,8 @@ package com.shubh.kafkachatserver.service;
 
 import com.shubh.kafkachatserver.constants.KafkaConstants;
 import com.shubh.kafkachatserver.model.dto.request.MessageRequest;
-import com.shubh.kafkachatserver.model.dto.response.MessagePage;
 import com.shubh.kafkachatserver.model.dto.response.MessageResponse;
 import com.shubh.kafkachatserver.model.entity.Message;
-import com.shubh.kafkachatserver.model.enumclass.MessageType;
 import com.shubh.kafkachatserver.repository.ChatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,7 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -28,18 +25,8 @@ public class ChatService {
 
     public void sendMessage(MessageRequest messageRequest) {
 
-        messageRequest.setTimestamp(LocalDateTime.now().toString());
-        if(messageRequest.getType() == MessageType.ENTER){
-            messageRequest.setContent(messageRequest.getSender() + "님이 입장하셨습니다.");
-            messageRequest.setSender("[알림]");
-        }
-        else if(messageRequest.getType() == MessageType.EXIT) {
-            messageRequest.setContent(messageRequest.getSender() + "님이 퇴장하셨습니다.");
-            messageRequest.setSender("[알림]");
-        }
-        System.out.println(messageRequest.getRoomId());
+        messageRequest.parsing();
         Message message = chatRepository.save(messageRequest.toEntity());
-        System.out.println(message);
         try {
             // post 요청으로 전달받은 메시지를 해당 카프카 토픽에 생산
             kafkaTemplate.send(KafkaConstants.KAFKA_TOPIC, MessageResponse.from(message)).get();

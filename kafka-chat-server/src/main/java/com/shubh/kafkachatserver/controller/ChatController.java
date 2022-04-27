@@ -1,7 +1,6 @@
 package com.shubh.kafkachatserver.controller;
 
 import com.shubh.kafkachatserver.model.dto.request.MessageRequest;
-import com.shubh.kafkachatserver.model.dto.response.MessagePage;
 import com.shubh.kafkachatserver.model.dto.response.MessageResponse;
 import com.shubh.kafkachatserver.service.ChatService;
 import lombok.RequiredArgsConstructor;

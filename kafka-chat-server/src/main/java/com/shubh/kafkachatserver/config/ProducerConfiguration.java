@@ -1,7 +1,6 @@
 package com.shubh.kafkachatserver.config;
 
 import com.shubh.kafkachatserver.model.dto.response.MessageResponse;
-import com.shubh.kafkachatserver.model.entity.Message;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.producer.ProducerConfig;
